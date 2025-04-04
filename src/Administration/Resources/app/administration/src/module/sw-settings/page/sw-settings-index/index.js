@@ -13,7 +13,24 @@ export default {
     inject: [
         'acl',
         'feature',
+        'userConfigService',
     ],
+
+    data() {
+        return {
+            /**
+             * @deprecated tag:v6.8.0 - Will be removed without replacement
+             */
+            hideSettingRenameBanner: true,
+        };
+    },
+
+    /**
+     * @deprecated tag:v6.8.0 - Will be removed without replacement
+     */
+    created() {
+        this.getUserConfig();
+    },
 
     metaInfo() {
         return {
@@ -59,6 +76,27 @@ export default {
     },
 
     methods: {
+        /**
+         * @deprecated tag:v6.8.0 - Will be removed without replacement
+         */
+        async getUserConfig() {
+            const response = await this.userConfigService.search(['settings.hideMigratingScalesUnitBanner']);
+            this.hideSettingRenameBanner = !!response.data['settings.hideMigratingScalesUnitBanner']?.data;
+        },
+
+        /**
+         * @deprecated tag:v6.8.0 - Will be removed without replacement
+         */
+        async onCloseUnitBanner() {
+            this.hideSettingRenameBanner = !this.hideSettingRenameBanner;
+
+            await this.userConfigService.upsert({
+                'settings.hideMigratingScalesUnitBanner': {
+                    data: true,
+                },
+            });
+        },
+
         hasPluginConfig() {
             return hasOwnProperty(this.settingsGroups, 'plugins') && this.settingsGroups.plugins.length > 0;
         },

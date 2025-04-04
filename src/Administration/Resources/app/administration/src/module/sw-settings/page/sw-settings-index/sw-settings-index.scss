@@ -3,6 +3,10 @@
 .sw-settings-index {
     &__card-view {
         background-color: var(--color-elevation-surface-default);
+
+        .sw-settings__content-unit-banner {
+            align-items: center;
+        }
     }
 
     .sw-settings__card--hero {
