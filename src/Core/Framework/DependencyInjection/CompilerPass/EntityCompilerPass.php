@@ -2,6 +2,9 @@
 
 namespace Shopware\Core\Framework\DependencyInjection\CompilerPass;
 
+use Shopware\Core\Framework\DataAbstractionLayer\AttributeEntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\AttributeMappingDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\AttributeTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -51,7 +54,16 @@ class EntityCompilerPass implements CompilerPassInterface
             if (!\is_subclass_of($class, EntityDefinition::class)) {
                 throw DependencyInjectionException::taggedServiceHasWrongType($serviceId, 'shopware.entity.definition', EntityDefinition::class);
             }
-            $instance = new $class();
+
+            if (\in_array($class, [AttributeEntityDefinition::class, AttributeTranslationDefinition::class, AttributeMappingDefinition::class], true)) {
+                if (empty($service->getArguments())) {
+                    continue;
+                }
+
+                $instance = new $class($service->getArguments()[0]);
+            } else {
+                $instance = new $class();
+            }
 
             $entityNameMap[$instance->getEntityName()] = $serviceId;
             $entity = $instance->getEntityName();
