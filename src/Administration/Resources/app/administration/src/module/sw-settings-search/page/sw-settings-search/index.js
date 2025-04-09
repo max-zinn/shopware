@@ -109,12 +109,6 @@ export default {
             this.getProductSearchConfigs();
 
             Shopware.ExtensionAPI.publishData({
-                id: 'sw-settings-search__currentSalesChannelId',
-                path: 'currentSalesChannelId',
-                scope: this,
-            });
-
-            Shopware.ExtensionAPI.publishData({
                 id: 'sw-settings-search__defaultConfig',
                 path: 'defaultConfig',
                 scope: this,
