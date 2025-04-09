@@ -31,14 +31,19 @@ class AdvancedPackageRules extends SetGroupScopeFilter
 
         foreach ($packages as $package) {
             $foundItems = [];
+            $checkedItems = [];
 
             foreach ($package->getMetaData() as $item) {
-                $lineItem = $package->getCartItem($item->getLineItemId());
+                if (!\array_key_exists($item->getLineItemId(), $checkedItems)) {
+                    $lineItem = $package->getCartItem($item->getLineItemId());
 
-                if ($this->isRulesFilterValid($lineItem, $priceDefinition, $context)) {
+                    $checkedItems[$item->getLineItemId()] = $this->isRulesFilterValid($lineItem, $priceDefinition, $context);
+                }
+
+                if ($checkedItems[$item->getLineItemId()]) {
                     $item = new LineItemQuantity(
-                        $lineItem->getId(),
-                        $lineItem->getQuantity()
+                        $item->getLineItemId(),
+                        $item->getQuantity()
                     );
 
                     $foundItems[] = $item;
