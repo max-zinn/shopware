@@ -34,14 +34,9 @@ class SearchPageLoader
     /**
      * @throws CategoryNotFoundException
      * @throws InconsistentCriteriaIdsException
-     * @throws RoutingException
      */
     public function load(Request $request, SalesChannelContext $salesChannelContext): SearchPage
     {
-        if (!$request->query->has('search')) {
-            throw RoutingException::missingRequestParameter('search');
-        }
-
         $page = $this->genericLoader->load($request, $salesChannelContext);
         $page = SearchPage::createFrom($page);
         $this->setMetaInformation($page);
@@ -56,7 +51,7 @@ class SearchPageLoader
         $page->setListing($result);
 
         $page->setSearchTerm(
-            (string) $request->query->get('search')
+            $request->query->getString('search')
         );
 
         $this->eventDispatcher->dispatch(
