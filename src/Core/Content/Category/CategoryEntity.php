@@ -112,6 +112,8 @@ class CategoryEntity extends Entity
 
     protected ?string $customEntityTypeId = null;
 
+    protected bool $optimized = false;
+
     public function getParentId(): ?string
     {
         return $this->parentId;
@@ -581,5 +583,15 @@ class CategoryEntity extends Entity
     public function setCustomEntityTypeId(?string $customEntityTypeId): void
     {
         $this->customEntityTypeId = $customEntityTypeId;
+    }
+
+    public function getOptimized(): bool
+    {
+        return $this->optimized;
+    }
+
+    public function setOptimized(bool $optimized): void
+    {
+        $this->optimized = $optimized;
     }
 }

@@ -73,6 +73,10 @@ class CategoryHydrator extends EntityHydrator
             $entity->customEntityTypeId = Uuid::fromBytesToHex($row[$root . '.customEntityTypeId']);
         }
 
+        if (isset($row[$root . '.optimized'])) {
+            $entity->optimized = (bool) $row[$root . '.optimized'];
+        }
+
         $entity->media = $this->manyToOne($row, $root, $definition->getField('media'), $context);
         $entity->cmsPage = $this->manyToOne($row, $root, $definition->getField('cmsPage'), $context);
         $entity->productStream = $this->manyToOne($row, $root, $definition->getField('productStream'), $context);

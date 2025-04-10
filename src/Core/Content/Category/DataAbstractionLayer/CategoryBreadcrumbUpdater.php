@@ -112,6 +112,9 @@ class CategoryBreadcrumbUpdater
                 'breadcrumb' => json_encode($path, \JSON_THROW_ON_ERROR),
             ]);
         }
+
+        // Use optimized update statement to avoid deadlocks
+        $this->optimizeUpdateStatement($ids, $context);
     }
 
     /**
@@ -133,5 +136,31 @@ class CategoryBreadcrumbUpdater
         $breadcrumb[$category->getId()] = $category->getTranslation('name');
 
         return $breadcrumb;
+    }
+
+    /**
+     * Optimize the SQL UPDATE statement to avoid deadlocks
+     *
+     * @param array<string> $ids
+     */
+    private function optimizeUpdateStatement(array $ids, Context $context): void
+    {
+        $versionId = Uuid::fromHexToBytes($context->getVersionId());
+
+        $query = $this->connection->createQueryBuilder();
+        $query->update('category', 'parent')
+            ->leftJoin(
+                'parent',
+                '(SELECT parent_id, count(id) total FROM category WHERE parent_id IN (:ids) AND version_id = :version GROUP BY parent_id)',
+                'child',
+                'parent.id = child.parent_id'
+            )
+            ->set('parent.child_count', 'IFNULL(child.total, 0)')
+            ->where('parent.id IN (:ids)')
+            ->andWhere('parent.version_id = :version')
+            ->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY)
+            ->setParameter('version', $versionId);
+
+        $query->executeStatement();
     }
 }

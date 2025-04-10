@@ -173,6 +173,9 @@ class CategoryDefinition extends EntityDefinition
             (new OneToManyAssociationField('seoUrls', SeoUrlDefinition::class, 'foreign_key'))->addFlags(new ApiAware()),
 
             (new IntField('visible_child_count', 'visibleChildCount'))->addFlags(new Runtime(), new ApiAware()),
+
+            // New field to indicate if the optimized SQL UPDATE statement should be used
+            (new BoolField('optimized', 'optimized'))->addFlags(new ApiAware()),
         ]);
     }
 }
